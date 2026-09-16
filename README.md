@@ -80,22 +80,33 @@ curl -X DELETE http://localhost:8080/tarefas/1
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/MiguelZGobbo/trabalho-api-spring.git
-   cd trabalho-api-spring
+   git clone https://github.com/MiguelZGobbo/API-de-Gerenciamento-de-Tarefas.git
+   cd API-de-Gerenciamento-de-Tarefas
    ```
 
 2. **Configure o banco de dados**
 
-   Crie um banco MySQL chamado `tarefasdb` e ajuste as credenciais em `src/main/resources/application.properties`:
+   Crie um banco MySQL chamado `tarefasdb`. A configuração padrão usa o usuário `root` e lê a senha da variável de ambiente `DB_PASSWORD`:
    ```properties
    spring.datasource.url=jdbc:mysql://localhost:3306/tarefasdb?useSSL=false&allowPublicKeyRetrieval=true
    spring.datasource.username=root
-   spring.datasource.password=sua-senha
+   spring.datasource.password=${DB_PASSWORD}
+   ```
+
+   Defina a variável antes de iniciar a aplicação:
+   ```bash
+   export DB_PASSWORD='sua-senha'
+   ```
+
+   No PowerShell:
+   ```powershell
+   $env:DB_PASSWORD = 'sua-senha'
    ```
 
 3. **Execute a aplicação**
+
    ```bash
-   ./mvnw spring-boot:run
+   mvn spring-boot:run
    ```
 
    A API estará disponível em `http://localhost:8080`.
@@ -105,7 +116,7 @@ curl -X DELETE http://localhost:8080/tarefas/1
 ## 🧪 Testes
 
 ```bash
-./mvnw test
+mvn test
 ```
 
 ---
@@ -127,6 +138,6 @@ A collection do Postman está incluída no repositório: [`API Tarefas.postman_c
 
 ## 👤 Autor
 
-**Miguel Zago Gobbo**
+**Miguel Zager Gobbo**
 
 [![GitHub](https://img.shields.io/badge/GitHub-MiguelZGobbo-181717?logo=github)](https://github.com/MiguelZGobbo)

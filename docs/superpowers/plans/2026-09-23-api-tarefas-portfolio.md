@@ -43,7 +43,7 @@
 - Wrapper fixa Maven 3.9.16 e funciona no Windows e em runners Linux.
 - Os comandos das tarefas seguintes usam `./mvnw` em Unix e `./mvnw.cmd` no PowerShell.
 
-- [ ] **Step 1: Disponibilizar JDK 17 na sessão de desenvolvimento**
+- [x] **Step 1: Disponibilizar JDK 17 na sessão de desenvolvimento**
 
 Verifique `java -version`. Se não houver JDK 17, baixe o ZIP Temurin 17 para Windows pelo endpoint oficial `https://api.adoptium.net/v3/binary/latest/17/ga/windows/x64/jdk/hotspot/normal/eclipse`, extraia em `%LOCALAPPDATA%\codex-tools\temurin-17`, defina `JAVA_HOME` e acrescente `%JAVA_HOME%\bin` ao `PATH` da sessão. Confira `java -version`. Não adicione o JDK ao repositório.
 
@@ -57,7 +57,7 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 java -version
 ```
 
-- [ ] **Step 2: Gerar os scripts oficiais do Maven Wrapper**
+- [x] **Step 2: Gerar os scripts oficiais do Maven Wrapper**
 
 Baixe o Maven 3.9.16 oficial para `%TEMP%`, extraia-o fora do repositório e gere os scripts com Maven Wrapper Plugin 3.3.4:
 
@@ -70,15 +70,15 @@ Expand-Archive $mavenZip -DestinationPath $env:TEMP -Force
 
 Mantenha `mvnw`, `mvnw.cmd` e `.mvn/wrapper/maven-wrapper.properties`; confirme que `distributionUrl` aponta para `apache-maven-3.9.16-bin.zip` e preserve os arquivos gerados.
 
-- [ ] **Step 3: Verificar a versão e registrar uma linha de base**
+- [x] **Step 3: Verificar a versão e registrar uma linha de base**
 
 Execute `./mvnw --version` se houver shell POSIX e `./mvnw.cmd --version` no PowerShell; cada comando deve informar Maven 3.9.16. Execute também `./mvnw test` ou `./mvnw.cmd test` e registre falhas preexistentes antes das próximas tarefas.
 
-- [ ] **Step 4: Marcar o script Unix como executável**
+- [x] **Step 4: Marcar o script Unix como executável**
 
 Execute `git update-index --chmod=+x mvnw` e confirme o modo `100755` com `git ls-files --stage mvnw`.
 
-- [ ] **Step 5: Commit da Task 1**
+- [x] **Step 5: Commit da Task 1**
 
 ```bash
 git add mvnw mvnw.cmd .mvn/wrapper
@@ -108,7 +108,7 @@ git commit -m "build: restore Maven Wrapper"
 - `TarefaService.deletar(Long): void`
 - Controller depende somente de `TarefaService`; DTOs não dependem de JPA.
 
-- [ ] **Step 1: Escrever teste MockMvc de criação com status 201**
+- [x] **Step 1: Escrever teste MockMvc de criação com status 201**
 
 Use `@WebMvcTest(TarefaController.class)`, `MockMvc` e `@MockBean TarefaRepository` para que o teste compile e exercite o controller atual antes da extração do service. O POST abaixo deve falhar inicialmente com 200, demonstrando a semântica atual incorreta.
 
@@ -148,11 +148,11 @@ void devePublicarDocumentacaoOpenApiDasTarefas() throws Exception {
 }
 ```
 
-- [ ] **Step 2: Rodar os testes novos e confirmar falha na implementação atual**
+- [x] **Step 2: Rodar os testes novos e confirmar falha na implementação atual**
 
 Execute `./mvnw -Dtest=TarefaControllerTest test` (ou `./mvnw.cmd -Dtest=TarefaControllerTest test` no PowerShell). Esperado: o teste compila e falha no status 201 porque o controller atual responde 200.
 
-- [ ] **Step 3: Cobrir campos ausentes, inválidos e parâmetros de ID**
+- [x] **Step 3: Cobrir campos ausentes, inválidos e parâmetros de ID**
 
 Adicione casos de `nome` vazio/maior que 255, `responsavel` em branco/maior que 255, ausência ou `null` de cada campo, data inválida (`2026-02-30`), corpo JSON malformado, ID não numérico, `0` e `-1`. Cada caso deve esperar 400 e objeto ProblemDetail com `status` e `detail`. Antes da extração, verifique que o repository não é chamado para ID não numérico; após o Step 7, adapte essa verificação para o service nos IDs não positivos.
 
@@ -181,15 +181,15 @@ static Stream<String> payloadsInvalidos() {
 }
 ```
 
-- [ ] **Step 4: Cobrir recurso ausente nas três operações por ID**
+- [x] **Step 4: Cobrir recurso ausente nas três operações por ID**
 
 Antes da extração do service, configure `tarefaRepository.findById(404L)` para retornar vazio. Escreva expectativas 404 para GET, PUT e DELETE e ProblemDetail no corpo; contra o controller atual os testes devem falhar (GET/deletar respondem incorretamente e PUT tende a 500). Ao executar o Step 7, troque o mock do repository por `TarefaService` que lança `TarefaNaoEncontradaException` e mantenha os mesmos asserts. A resposta não pode conter nomes de classes, SQL ou stack trace.
 
-- [ ] **Step 5: Implementar DTOs validados e adicionar a dependência de validação**
+- [x] **Step 5: Implementar DTOs validados e adicionar a dependência de validação**
 
 Crie records Java com os campos `Long id`, `String nome`, `String responsavel` e `LocalDate dataEntrega` na resposta. Nos DTOs de entrada use `@NotBlank @Size(max = 255)` em `nome` e `responsavel`, além de `@NotNull` em `dataEntrega`. Adicione `spring-boot-starter-validation` sem versão manual, pois o parent Spring Boot gerencia a versão. Adicione `org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0`, compatível com Spring Boot 3.1.x.
 
-- [ ] **Step 6: Escrever testes unitários do service e executá-los em vermelho**
+- [x] **Step 6: Escrever testes unitários do service e executá-los em vermelho**
 
 Use JUnit 5 e Mockito para verificar criação e mapeamento dos campos, lista vazia/com itens, busca existente, atualização preservando o ID persistido, exclusão existente e `TarefaNaoEncontradaException` em GET/PUT/DELETE quando `findById` retorna vazio. Não inicialize Spring nesses testes.
 
@@ -208,19 +208,19 @@ class TarefaServiceTest {
 }
 ```
 
-- [ ] **Step 7: Implementar service, exceção e controller por construtor**
+- [x] **Step 7: Implementar service, exceção e controller por construtor**
 
 Altere o teste MockMvc para mockar `TarefaService` em vez de `TarefaRepository` e mantenha os asserts de contrato. Injete `TarefaRepository` por construtor em `TarefaService`; converta DTO para `Tarefa` ao gravar e entidade para `TarefaResponse` ao responder. No PUT, busque a tarefa existente e altere apenas `nome`, `responsavel` e `dataEntrega`, sem copiar ID do corpo. Injete apenas `TarefaService` no controller. Use `@Valid` nos corpos e `@Validated`/`@Positive` no ID. POST retorna `ResponseEntity.created(URI.create("/tarefas/" + resposta.id())).body(resposta)`; DELETE retorna `ResponseEntity.noContent().build()`.
 
-- [ ] **Step 8: Implementar respostas ProblemDetail e repetir os testes**
+- [x] **Step 8: Implementar respostas ProblemDetail e repetir os testes**
 
 No `@RestControllerAdvice`, trate `TarefaNaoEncontradaException` como 404, `MethodArgumentNotValidException` como 400 com erros de campo determinísticos, `ConstraintViolationException` como 400 para ID zero/negativo, `MethodArgumentTypeMismatchException` como 400 para ID não numérico e `HttpMessageNotReadableException` como 400 com detalhe genérico. Reexecute os testes do controller e service; ambos devem passar.
 
-- [ ] **Step 9: Executar a suíte e revisar o diff da Task 2**
+- [x] **Step 9: Executar a suíte e revisar o diff da Task 2**
 
 Execute `./mvnw test`. Confirme que a entidade JPA não aparece nos parâmetros/retornos do controller, que os campos da collection foram preservados, que `/v3/api-docs` lista as rotas de tarefas e que os cinco pontos de Review Focus têm testes. Remova o teste de contexto vazio somente após os testes de comportamento passarem.
 
-- [ ] **Step 10: Commit da Task 2**
+- [x] **Step 10: Commit da Task 2**
 
 ```bash
 git add pom.xml src/main/java src/test/java

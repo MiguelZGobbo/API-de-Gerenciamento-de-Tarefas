@@ -280,19 +280,19 @@ git commit -m "build(db): add Flyway migrations and local MySQL setup"
 **Interfaces:**
 - CI instala Java 17, ativa cache Maven e executa `./mvnw --batch-mode test` em push e pull request.
 
-- [ ] **Step 1: Criar workflow de CI**
+- [x] **Step 1: Criar workflow de CI**
 
 Crie workflow para `push` e `pull_request`, com `actions/checkout`, `actions/setup-java` usando Temurin 17 e `cache: maven`; execute `./mvnw --batch-mode test`. Não exponha segredos nem dependa de MySQL/Docker.
 
-- [ ] **Step 2: Configurar Dependabot para Maven e GitHub Actions**
+- [x] **Step 2: Configurar Dependabot para Maven e GitHub Actions**
 
 Crie `.github/dependabot.yml` com `version: 2`, diretório `/`, ecossistema `maven` e `github-actions`, ambos em atualizações semanais. Não configure limites ou regras adicionais sem necessidade.
 
-- [ ] **Step 3: Executar os mesmos comandos do CI e revisar o diff final**
+- [x] **Step 3: Executar os mesmos comandos do CI e revisar o diff final**
 
 Execute `./mvnw.cmd --version`, `./mvnw.cmd test` e `docker compose config` quando disponíveis. Confira workflows e YAML, `git diff --check`, `git status` e confirme que `README.md` não foi alterado.
 
-- [ ] **Step 4: Commit da Task 4**
+- [x] **Step 4: Commit da Task 4**
 
 ```bash
 git add .github/workflows/ci.yml .github/dependabot.yml

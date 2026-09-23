@@ -244,19 +244,19 @@ git commit -m "feat(api): add service layer and validated task contract"
 - URL de desenvolvimento `jdbc:mysql://localhost:3306/tarefasdb?useSSL=false&allowPublicKeyRetrieval=true`; `DB_USERNAME` e `DB_PASSWORD` são obrigatórias e seguem as variáveis locais de `.env.example`.
 - Schema: tabela `tarefa` com `id BIGINT AUTO_INCREMENT`, `nome VARCHAR(255)`, `responsavel VARCHAR(255)` e `data_entrega DATE`, compatível com o mapeamento atual.
 
-- [ ] **Step 1: Adicionar Flyway e configurações externas**
+- [x] **Step 1: Adicionar Flyway e configurações externas**
 
 Configure `spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/tarefasdb?useSSL=false&allowPublicKeyRetrieval=true}`, `spring.datasource.username=${DB_USERNAME}` e `spring.datasource.password=${DB_PASSWORD}` sem defaults de credenciais na aplicação. Desative `spring.jpa.show-sql`, remova dialeto explícito desnecessário, defina `spring.jpa.hibernate.ddl-auto=validate`, habilite Flyway e configure baseline-on-migrate na versão `1` para reconhecer bancos existentes que já têm a tabela. O `.env.example` contém apenas credenciais locais de demonstração.
 
-- [ ] **Step 2: Criar migração V1 compatível com o schema existente**
+- [x] **Step 2: Criar migração V1 compatível com o schema existente**
 
 Escreva `CREATE TABLE tarefa` com chave primária bigint auto incremental e colunas com os nomes/tipos derivados do mapeamento atual do Hibernate. Não adicione uma restrição NOT NULL às colunas existentes sem comprovar que isso é compatível com bancos já criados.
 
-- [ ] **Step 3: Adicionar Compose e configuração de ambiente local**
+- [x] **Step 3: Adicionar Compose e configuração de ambiente local**
 
 Configure MySQL 8 com database `tarefasdb`, usuário `tarefas`, senha interpolada de `DB_PASSWORD` com fallback local `tarefas_dev_password`, porta `3306:3306`, volume nomeado e healthcheck `mysqladmin ping`. Adicione `.env` ao `.gitignore` e versione `.env.example` com os mesmos valores locais, sem credenciais reais. Para Compose, quem executa copia `.env.example` para `.env`; a aplicação local recebe `DB_URL`, `DB_USERNAME` e `DB_PASSWORD` no terminal.
 
-- [ ] **Step 4: Validar configuração estática e suíte sem banco**
+- [x] **Step 4: Validar configuração estática e suíte sem banco**
 
 Execute `docker compose config` quando Docker estiver disponível e `./mvnw test` sem iniciar MySQL. Confira que a propriedade `DB_URL` não contém usuário/senha e que a migração corresponde a `@Table`/`@Column` da entidade.
 
@@ -264,7 +264,7 @@ Execute `docker compose config` quando Docker estiver disponível e `./mvnw test
 
 Execute `docker compose up -d`, inicie a API com as variáveis do `.env.example` e confirme que Flyway aplica V1 numa base vazia. Faça uma segunda inicialização e confirme que não há alteração automática do schema. Se houver um schema legado, confirme que o baseline o reconhece e `ddl-auto=validate` inicia sem mudar os dados.
 
-- [ ] **Step 6: Commit da Task 3**
+- [x] **Step 6: Commit da Task 3**
 
 ```bash
 git add pom.xml src/main/java/com/miguel/tarefas/model/Tarefa.java src/main/resources/application.properties src/main/resources/db/migration/V1__create_tarefa.sql compose.yml .gitignore .env.example

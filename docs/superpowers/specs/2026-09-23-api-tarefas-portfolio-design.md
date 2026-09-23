@@ -26,6 +26,10 @@ Adicionar `CriarTarefaRequest`, `AtualizarTarefaRequest` e `TarefaResponse`, seg
 
 Os endpoints retornam `201 Created` na criação, `200 OK` em consultas, listagem e atualização, `204 No Content` na exclusão bem-sucedida, `404 Not Found` para recurso inexistente e `400 Bad Request` para payload inválido ou ilegível. PUT continua substituindo os três campos, como já documentado na collection.
 
+### Documentação da API
+
+Adicionar Swagger UI e OpenAPI usando `springdoc-openapi` da linha 2.2.x, compatível com o Spring Boot 3.1.x usado pelo projeto. A interface fica disponível em `/swagger-ui.html` e o documento JSON em `/v3/api-docs`. Descrever a API de tarefas existente; não documentar recursos de usuários, pedidos, itens ou autenticação, que não existem neste projeto.
+
 ### Erros
 
 Adicionar exceção específica para tarefa inexistente e um `@RestControllerAdvice` que produz `ProblemDetail` para validação, JSON/data malformados e recurso ausente. Mensagens não devem expor detalhes internos do banco ou stack trace.
@@ -42,7 +46,7 @@ Substituir o teste de contexto isolado por testes de comportamento do serviço e
 
 ## Critérios de aceite
 
-1. A API mantém as rotas e os nomes de campo existentes, sem expor a entidade JPA.
+1. A API mantém as rotas e os nomes de campo existentes, sem expor a entidade JPA; Swagger UI e OpenAPI descrevem essas rotas.
 2. Controller, service e repository têm responsabilidades separadas.
 3. Validação e semântica HTTP seguem as decisões acima.
 4. Banco e credenciais são configuráveis por variáveis de ambiente e schema é controlado por Flyway.
@@ -54,5 +58,6 @@ Substituir o teste de contexto isolado por testes de comportamento do serviço e
 ## Fora do escopo desta etapa
 
 - Reescrever o README.
+- Adicionar autenticação, usuários, pedidos ou itens.
 - Alterar o About ou as configurações de segurança diretamente no GitHub.
 - Autenticação, paginação, novas funcionalidades ou uma nova versão da API.

@@ -24,3 +24,42 @@ jobs:
 
       - name: Run tests
         run: ./mvnw --batch-mode test
+
+  integration:
+    name: MySQL integration
+    runs-on: ubuntu-24.04
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: tarefasdb
+          MYSQL_USER: tarefas
+          MYSQL_PASSWORD: tarefas_dev_password
+          MYSQL_ROOT_PASSWORD: root_dev_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=localhost --user=tarefas --password=tarefas_dev_password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      DB_URL: jdbc:mysql://127.0.0.1:3306/tarefasdb?useSSL=false&allowPublicKeyRetrieval=true
+      DB_USERNAME: tarefas
+      DB_PASSWORD: tarefas_dev_password
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Validate Compose configuration
+        run: docker compose config --quiet
+
+      - name: Run API integration test
+        run: ./mvnw --batch-mode -Pintegration-tests verify

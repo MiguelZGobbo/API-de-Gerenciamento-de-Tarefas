@@ -4,14 +4,16 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    # Major upgrades in these framework families need a coordinated migration.
+    # Spring Boot and springdoc updates require versions validated together by CI.
     ignore:
       - dependency-name: "org.springframework.boot:spring-boot-starter-parent"
         update-types:
           - "version-update:semver-major"
+          - "version-update:semver-minor"
       - dependency-name: "org.springdoc:springdoc-openapi-starter-webmvc-ui"
         update-types:
           - "version-update:semver-major"
+          - "version-update:semver-minor"
       - dependency-name: "org.flywaydb:flyway-mysql"
         update-types:
           - "version-update:semver-major"

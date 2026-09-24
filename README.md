@@ -6,6 +6,8 @@ API REST para cadastrar e consultar tarefas identificadas por nome, responsável
 
 A API centraliza as operações desse cadastro e mostra como organizar um CRUD com validação, persistência versionada, respostas HTTP previsíveis e testes automatizados.
 
+![Diagrama da arquitetura da API de gerenciamento de tarefas](docs/images/arquitetura-api.png)
+
 ## O que já faz
 
 - Cria, lista, consulta, atualiza e exclui tarefas.
@@ -16,7 +18,7 @@ A API centraliza as operações desse cadastro e mostra como organizar um CRUD c
 
 ## Stack
 
-Java 17 · Spring Boot 3.1.5 · Spring MVC · Spring Data JPA · Bean Validation · MySQL 8 · Flyway · springdoc OpenAPI · Maven Wrapper · Docker Compose · JUnit 5 · Mockito · MockMvc · GitHub Actions
+Java 17 · Spring Boot 3.1.12 · Spring MVC · Spring Data JPA · Bean Validation · MySQL 8 · Flyway · springdoc OpenAPI · Maven Wrapper · Docker Compose · JUnit 5 · Mockito · MockMvc · GitHub Actions
 
 ## Executar localmente
 

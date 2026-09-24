@@ -74,7 +74,7 @@ mvnw / mvnw.cmd                     # Maven Wrapper
 
 `./mvnw test` executa testes do controller e do service sem exigir MySQL. No Windows, use `.\mvnw.cmd test`.
 
-Com o banco iniciado e as variáveis configuradas, `./mvnw -Pintegration-tests verify` (ou `.\mvnw.cmd -Pintegration-tests verify`) também inicia a API, confirma a migração Flyway e exercita o CRUD por HTTP. O [GitHub Actions](https://github.com/MiguelZGobbo/API-de-Gerenciamento-de-Tarefas/actions/workflows/ci.yml) executa esses dois níveis em jobs separados, com MySQL temporário no job de integração, e valida a configuração do Compose. O Dependabot verifica atualizações do Maven e das Actions semanalmente.
+Com o banco iniciado e as variáveis configuradas, `./mvnw -Pintegration-tests verify` (ou `.\mvnw.cmd -Pintegration-tests verify`) também inicia a API, confirma a migração Flyway e exercita o CRUD por HTTP. O [GitHub Actions](https://github.com/MiguelZGobbo/API-de-Gerenciamento-de-Tarefas/actions/workflows/ci.yml) executa esses dois níveis em jobs separados e sobe o MySQL temporário pelo próprio Compose no job de integração. O Dependabot verifica atualizações do Maven e das Actions semanalmente.
 
 ## Documentação da API
 

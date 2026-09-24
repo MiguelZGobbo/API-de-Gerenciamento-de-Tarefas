@@ -2,29 +2,32 @@
 
 [![CI](https://github.com/MiguelZGobbo/API-de-Gerenciamento-de-Tarefas/actions/workflows/ci.yml/badge.svg)](https://github.com/MiguelZGobbo/API-de-Gerenciamento-de-Tarefas/actions/workflows/ci.yml)
 
-API REST para organizar tarefas por nome, responsável e data de entrega. O projeto demonstra um CRUD com contrato HTTP definido, validação de entrada, persistência em MySQL e testes que cobrem tanto a lógica da aplicação quanto sua execução com banco real.
+API REST para cadastrar e consultar tarefas identificadas por nome, responsável e data de entrega. O projeto começou como trabalho acadêmico de Desenvolvimento Web Back-end e foi aprimorado para demonstrar, em um escopo funcional, práticas essenciais de desenvolvimento backend com Java.
 
-## O que a API faz
+A API centraliza as operações desse cadastro e mostra como organizar um CRUD com validação, persistência versionada, respostas HTTP previsíveis e testes automatizados.
+
+## O que já faz
 
 - Cria, lista, consulta, atualiza e exclui tarefas.
-- Exige `nome`, `responsavel` e `dataEntrega` na criação e na atualização. Textos em branco ou com mais de 255 caracteres e datas inválidas ou fora do formato `yyyy-MM-dd` são rejeitados.
-- Retorna `201` na criação, `200` nas consultas e atualizações, `204` na exclusão, `400` para requisições inválidas e `404` para tarefas inexistentes. Erros seguem o formato `ProblemDetail`.
-- Persiste os dados em MySQL com schema versionado pelo Flyway e oferece documentação interativa com Swagger UI.
+- Valida os campos `nome`, `responsavel` e `dataEntrega`: textos são obrigatórios, não podem ficar em branco e têm limite de 255 caracteres; a data é obrigatória e usa o formato `yyyy-MM-dd`.
+- Persiste as tarefas em MySQL e cria o schema com migrações Flyway.
+- Retorna `201` na criação, `200` nas consultas e atualizações, `204` na exclusão, `400` para entradas inválidas e `404` quando a tarefa não existe; os erros seguem `ProblemDetail`.
+- Documenta os endpoints com Swagger UI e OpenAPI.
 
 ## Stack
 
-Java 17 · Spring Boot 3.1.5 (Web MVC, Data JPA e Validation) · MySQL 8 · Flyway · springdoc OpenAPI · Maven Wrapper · Docker Compose · JUnit 5, Mockito e MockMvc · GitHub Actions
+Java 17 · Spring Boot 3.1.5 · Spring MVC · Spring Data JPA · Bean Validation · MySQL 8 · Flyway · springdoc OpenAPI · Maven Wrapper · Docker Compose · JUnit 5 · Mockito · MockMvc · GitHub Actions
 
 ## Executar localmente
 
-É necessário ter **Java 17** e **Docker Compose**. O Maven Wrapper incluído no repositório baixa a versão do Maven usada pelo projeto.
+**Pré-requisitos:** Java 17 e Docker com Docker Compose. O Maven Wrapper incluído baixa e usa a versão de Maven configurada no projeto.
 
 ```bash
 git clone https://github.com/MiguelZGobbo/API-de-Gerenciamento-de-Tarefas.git
 cd API-de-Gerenciamento-de-Tarefas
 ```
 
-Na pasta do projeto, copie o exemplo de configuração, inicie o MySQL e execute a aplicação. O Compose espera o banco ficar saudável antes de retornar.
+Copie o exemplo de configuração e inicie o banco:
 
 **Linux/macOS**
 
@@ -44,41 +47,73 @@ $env:DB_PASSWORD = 'tarefas_dev_password'
 .\mvnw.cmd spring-boot:run
 ```
 
-A API fica em `http://localhost:8080`. Os valores de usuário e senha acima são apenas para desenvolvimento local; se alterar o `.env`, use os mesmos valores ao iniciar a aplicação. Para encerrar o banco, execute `docker compose down`.
+A API ficará disponível em `http://localhost:8080`. Para encerrar o banco, use `docker compose down`.
 
-| Variável | Uso |
+O Docker Compose carrega as configurações de `.env`. Ao iniciar a aplicação pelo Maven Wrapper, as variáveis da conexão também precisam estar disponíveis no terminal. Os comandos acima usam os valores locais do `.env.example`; se alterar as credenciais, atualize também as variáveis no terminal. Não use credenciais reais nesse arquivo.
+
+| Variável | Finalidade |
 | --- | --- |
-| `DB_URL` | URL JDBC da aplicação. Opcional para o MySQL local na porta 3306; necessária para outro endereço. |
-| `DB_USERNAME` | Usuário do MySQL usado pela aplicação e pelo Compose. Obrigatória na aplicação. |
-| `DB_PASSWORD` | Senha desse usuário. Obrigatória na aplicação. |
-| `MYSQL_ROOT_PASSWORD` | Senha do usuário root do contêiner, opcional para a configuração local do Compose. |
+| `DB_URL` | URL JDBC da aplicação. Opcional para o MySQL local na porta 3306; configure para usar outro endereço. |
+| `DB_USERNAME` | Usuário MySQL da aplicação e do contêiner; obrigatório para iniciar a aplicação. |
+| `DB_PASSWORD` | Senha do usuário; obrigatória para iniciar a aplicação. |
+| `MYSQL_ROOT_PASSWORD` | Senha do root do contêiner; opcional, com valor local padrão. |
 
-O arquivo `.env` é lido pelo Compose; ao executar a aplicação com o Maven Wrapper, informe as variáveis à sessão do terminal como nos comandos acima. Não versione credenciais reais.
+## Como foi construída
 
-## Como está organizado
+O fluxo segue `Controller → Service → Repository → MySQL`. O controller recebe e devolve DTOs e valida as requisições; o service concentra as operações da aplicação; e o repository acessa os dados com Spring Data JPA. A entidade JPA fica interna, e um handler global transforma erros em respostas `ProblemDetail`.
 
-O fluxo é `Controller → Service → Repository → MySQL`. O controller recebe e devolve DTOs, o service executa o CRUD e o repository usa Spring Data JPA. A entidade `Tarefa` permanece interna; o `GlobalExceptionHandler` concentra as respostas de erro. O Flyway cria o schema e o Hibernate o valida na inicialização.
+O Flyway cria o schema a partir de migrações versionadas. Na inicialização, o Hibernate valida o schema existente.
 
 ```text
 src/main/java/com/miguel/tarefas/
-  controller/  dto/  service/  repository/  model/  exception/
-src/main/resources/db/migration/   # migrações Flyway
-src/test/java/com/miguel/tarefas/  # testes HTTP, de service e de integração
-.github/workflows/ci.yml           # testes no GitHub Actions
-compose.yml                         # MySQL local
-.env.example                        # configuração de exemplo
-mvnw / mvnw.cmd                     # Maven Wrapper
+  controller/  # endpoints REST
+  dto/         # contratos de entrada e saída
+  service/     # operações da aplicação
+  repository/  # acesso a dados
+  model/       # entidade JPA
+  exception/   # exceções e respostas de erro
+src/main/resources/db/migration/  # migrações Flyway
+src/test/java/com/miguel/tarefas/ # testes de controller, service e integração
+.github/workflows/ci.yml          # automação de build e testes
+compose.yml                       # MySQL para desenvolvimento local
+.env.example                      # variáveis com valores de desenvolvimento
+.mvn/wrapper/                     # configuração do Maven Wrapper
+mvnw / mvnw.cmd                   # execução em Linux/macOS e Windows
 ```
 
 ## Testes e automação
 
-`./mvnw test` executa testes do controller e do service sem exigir MySQL. No Windows, use `.\mvnw.cmd test`.
+Execute os testes rápidos sem precisar iniciar o MySQL:
 
-Com o banco iniciado e as variáveis configuradas, `./mvnw -Pintegration-tests verify` (ou `.\mvnw.cmd -Pintegration-tests verify`) também inicia a API, confirma a migração Flyway e exercita o CRUD por HTTP. O [GitHub Actions](https://github.com/MiguelZGobbo/API-de-Gerenciamento-de-Tarefas/actions/workflows/ci.yml) executa esses dois níveis em jobs separados e sobe o MySQL temporário pelo próprio Compose no job de integração. O Dependabot verifica atualizações do Maven e das Actions semanalmente.
+```bash
+./mvnw test
+```
 
-## Documentação da API
+No Windows, use `.\mvnw.cmd test`.
 
-Com a aplicação em execução, acesse o [Swagger UI](http://localhost:8080/swagger-ui.html) ou o [documento OpenAPI](http://localhost:8080/v3/api-docs). A [collection do Postman](./API%20Tarefas.postman_collection.json) também está disponível.
+Os testes de controller e service cobrem operações do CRUD, validações e erros. O teste de integração verifica o fluxo HTTP contra MySQL real, a migração do Flyway e o endpoint OpenAPI. Para executá-lo localmente, inicie o Compose e informe as mesmas credenciais do `.env.example` ao terminal:
+
+**Linux/macOS**
+
+```bash
+docker compose up -d --wait
+DB_USERNAME=tarefas DB_PASSWORD=tarefas_dev_password ./mvnw -Pintegration-tests verify
+```
+
+**Windows (PowerShell)**
+
+```powershell
+docker compose up -d --wait
+$env:DB_USERNAME = 'tarefas'
+$env:DB_PASSWORD = 'tarefas_dev_password'
+.\mvnw.cmd -Pintegration-tests verify
+```
+
+O [GitHub Actions](https://github.com/MiguelZGobbo/API-de-Gerenciamento-de-Tarefas/actions/workflows/ci.yml) executa os testes rápidos e a integração com MySQL pelo Docker Compose em cada push e pull request. O Dependabot verifica atualizações semanais das dependências Maven e das GitHub Actions.
+
+## Documentação e endpoints
+
+Com a aplicação em execução, acesse o [Swagger UI](http://localhost:8080/swagger-ui.html) ou o [documento OpenAPI](http://localhost:8080/v3/api-docs). A collection para Postman está em [`API Tarefas.postman_collection.json`](./API%20Tarefas.postman_collection.json).
 
 | Método | Rota | Descrição |
 | --- | --- | --- |
@@ -90,9 +125,9 @@ Com a aplicação em execução, acesse o [Swagger UI](http://localhost:8080/swa
 
 ## Decisões técnicas
 
-- **DTOs separados da entidade JPA:** mantêm o contrato HTTP explícito e permitem validar entradas antes de persistir.
-- **Camadas simples:** controller, service e repository têm responsabilidades distintas sem acrescentar abstrações desnecessárias ao CRUD.
-- **Flyway com `ddl-auto=validate`:** mudanças no schema são versionadas; o baseline está configurado para reconhecer bancos criados antes da migração.
-- **Testes em dois níveis:** os testes rápidos funcionam sem banco local, e a integração no CI verifica a aplicação completa contra MySQL.
+- **DTOs separados da entidade JPA:** deixam explícito o contrato HTTP e permitem validar dados antes da persistência.
+- **Camadas simples:** controller, service e repository distribuem responsabilidades sem acrescentar abstrações desnecessárias ao CRUD.
+- **Flyway e `ddl-auto=validate`:** versionam a criação do schema e verificam se o banco corresponde ao mapeamento da aplicação.
+- **Testes rápidos e de integração:** permitem validar regras sem banco local e também verificar o comportamento completo com MySQL.
 
-Projeto iniciado em contexto acadêmico e aprimorado para apresentar práticas de desenvolvimento backend. Desenvolvido por [Miguel Zager Gobbo](https://github.com/MiguelZGobbo).
+Projeto desenvolvido por [Miguel Zager Gobbo](https://github.com/MiguelZGobbo).

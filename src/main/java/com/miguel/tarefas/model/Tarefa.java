@@ -4,16 +4,21 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "tarefa")
 public class Tarefa {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "nome", length = 255)
     private String nome;
 
+    @Column(name = "data_entrega")
     private LocalDate dataEntrega;
 
+    @Column(name = "responsavel", length = 255)
     private String responsavel;
 
     public Long getId() {
